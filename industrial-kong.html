@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Industrial Kong — Projeto Mundo SENAI</title>
+<meta name="description" content="Jogo de plataforma industrial inspirado em Donkey Kong com fliperama artesanal de madeira. Projeto Mundo SENAI."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#141414;--bg2:#1e1e1e;--bg3:#0f0f0f;
+--fg:#ebebeb;--fg2:#8c8c8c;
+--primary:#ff6a00;--primary-light:#ff9933;
+--border:#404040;--card:#1e1e1e;
+--font-display:'Orbitron',sans-serif;
+--font-body:'Inter',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-body);line-height:1.6;overflow-x:hidden}
+h1,h2,h3,h4,h5,h6{font-family:var(--font-display)}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;height:auto;display:block}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+
+/* ---------- NAV ---------- */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;transition:background .3s,border .3s}
+nav.scrolled{background:rgba(20,20,20,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+.nav-logo{font-family:var(--font-display);font-weight:700;font-size:1.1rem;background:linear-gradient(135deg,#ff6a00,#ff9933);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:24px}
+.nav-links a{font-size:.85rem;color:var(--fg2);transition:color .2s}
+.nav-links a:hover{color:var(--primary)}
+.menu-btn{display:none;background:none;border:none;color:var(--fg);font-size:1.5rem;cursor:pointer}
+.mobile-menu{display:none;flex-direction:column;gap:12px;padding:16px 20px;background:rgba(20,20,20,.98);border-bottom:1px solid var(--border)}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-size:.9rem;color:var(--fg2);padding:6px 0}
+@media(max-width:900px){.nav-links{display:none}.menu-btn{display:block}}
+
+/* ---------- UTILITIES ---------- */
+.text-gradient{background:linear-gradient(135deg,#ff7b1a,#ffaa44);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.glow-orange{box-shadow:0 0 30px rgba(255,106,0,.3),0 0 60px rgba(255,106,0,.1)}
+.steel-border{border:1px solid #3f3f3f;box-shadow:inset 0 1px 0 rgba(77,77,77,.3)}
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,106,0,.4),transparent);margin-bottom:60px}
+.label{font-family:var(--font-display);font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--primary);margin-bottom:10px}
+.section-title{font-family:var(--font-display);font-size:clamp(1.6rem,4vw,2.4rem);font-weight:700;margin-bottom:16px}
+section{padding:96px 0}
+.industrial-bg{background:linear-gradient(180deg,#0f0f0f,#1e1e1e)}
+.card{background:var(--card);border-radius:12px;padding:32px}
+
+/* ---------- HERO ---------- */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.25}
+.hero-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(20,20,20,.6),rgba(20,20,20,.8),var(--bg))}
+.hero-content{position:relative;z-index:2}
+.hero h1{font-size:clamp(2.5rem,7vw,5rem);font-weight:900;line-height:1.1;margin-bottom:24px}
+.hero p.sub{color:var(--fg2);font-size:clamp(1rem,2vw,1.25rem);max-width:640px;margin:0 auto 40px}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--primary);color:#fff;padding:14px 32px;border-radius:8px;font-family:var(--font-display);font-size:.85rem;font-weight:600;letter-spacing:.08em;transition:filter .2s}
+.btn-primary:hover{filter:brightness(1.15)}
+.chevron{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);color:var(--primary);font-size:1.5rem;animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(10px)}}
+
+/* ---------- ABOUT ---------- */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px}
+.feature-card{text-align:center;padding:32px;border-radius:12px;transition:box-shadow .5s}
+.feature-card:hover{box-shadow:0 0 30px rgba(255,106,0,.25)}
+.feature-icon{width:56px;height:56px;border-radius:10px;background:rgba(255,106,0,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:var(--primary);font-size:1.6rem}
+
+/* ---------- DEV STEPS ---------- */
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px}
+.step-card{position:relative;padding:28px;border-radius:12px;background:rgba(30,30,30,.6);backdrop-filter:blur(6px)}
+.step-num{position:absolute;top:-12px;left:-12px;width:32px;height:32px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:.85rem;font-weight:700}
+.step-icon{color:var(--primary);font-size:1.8rem;margin-bottom:12px}
+.step-card h3{font-size:.95rem;margin-bottom:8px}
+.step-card p{font-size:.85rem;color:var(--fg2);line-height:1.7}
+
+/* ---------- GAME ---------- */
+.game-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;margin-bottom:48px}
+@media(max-width:900px){.game-layout{grid-template-columns:1fr}}
+.phase-card{display:flex;gap:20px;align-items:flex-start;padding:24px;border-radius:12px}
+.phase-num{flex-shrink:0;width:48px;height:48px;border-radius:10px;background:rgba(255,106,0,.12);color:var(--primary);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:1.1rem}
+.phase-diff{font-size:.7rem;font-family:var(--font-display);color:var(--primary);background:rgba(255,106,0,.1);padding:2px 10px;border-radius:99px}
+.coffee-box{display:flex;align-items:center;gap:32px;padding:32px;border-radius:12px;max-width:720px;margin:0 auto;flex-wrap:wrap;justify-content:center}
+.coffee-icon{font-size:4rem}
+
+/* ---------- ARCADE ---------- */
+.arcade-layout{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+@media(max-width:900px){.arcade-layout{grid-template-columns:1fr}}
+.arcade-specs{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
+@media(max-width:600px){.arcade-specs{grid-template-columns:1fr}}
+.spec-card{text-align:center;padding:16px;border-radius:12px}
+.spec-card .icon{color:var(--primary);font-size:1.4rem;margin-bottom:8px}
+
+/* ---------- GALLERY ---------- */
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.gallery-item{position:relative;overflow:hidden;border-radius:12px;aspect-ratio:1}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.gallery-item:hover img{transform:scale(1.1)}
+.gallery-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(20,20,20,.8),transparent);opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;padding:16px}
+.gallery-item:hover .gallery-overlay{opacity:1}
+
+/* ---------- TEAM ---------- */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:24px;max-width:900px;margin:0 auto}
+.team-card{text-align:center;padding:24px;border-radius:12px}
+.team-avatar{width:64px;height:64px;border-radius:50%;background:rgba(255,106,0,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--primary);font-size:1.6rem}
+
+/* ---------- CONTACT ---------- */
+.contact-links{display:flex;justify-content:center;gap:24px;flex-wrap:wrap}
+.contact-item{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--fg2);transition:color .2s}
+.contact-item:hover{color:var(--primary)}
+.contact-icon{width:48px;height:48px;border-radius:10px;background:var(--card);display:flex;align-items:center;justify-content:center;transition:box-shadow .3s}
+.contact-item:hover .contact-icon{box-shadow:0 0 20px rgba(255,106,0,.3)}
+
+/* ---------- FOOTER ---------- */
+footer{border-top:1px solid var(--border);padding:32px 0;text-align:center}
+footer p{font-family:var(--font-display);font-size:.85rem;color:var(--fg2)}
+
+/* ---------- ANIMATIONS ---------- */
+.fade-up{opacity:0;transform:translateY(30px);transition:opacity .6s,transform .6s}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.float{animation:float 3s ease-in-out infinite}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+<div class="container nav-inner">
+  <a href="#home" class="nav-logo">MUNDO SENAI</a>
+  <div class="nav-links">
+    <a href="#home">Início</a><a href="#sobre">Sobre</a><a href="#desenvolvimento">Desenvolvimento</a>
+    <a href="#jogo">O Jogo</a><a href="#fliperama">Fliperama</a><a href="#galeria">Galeria</a>
+    <a href="#equipe">Equipe</a><a href="#contato">Contato</a>
+  </div>
+  <button class="menu-btn" onclick="document.getElementById('mob').classList.toggle('open')">☰</button>
+</div>
+<div id="mob" class="mobile-menu">
+  <a href="#home" onclick="this.parentElement.classList.remove('open')">Início</a>
+  <a href="#sobre" onclick="this.parentElement.classList.remove('open')">Sobre</a>
+  <a href="#desenvolvimento" onclick="this.parentElement.classList.remove('open')">Desenvolvimento</a>
+  <a href="#jogo" onclick="this.parentElement.classList.remove('open')">O Jogo</a>
+  <a href="#fliperama" onclick="this.parentElement.classList.remove('open')">Fliperama</a>
+  <a href="#galeria" onclick="this.parentElement.classList.remove('open')">Galeria</a>
+  <a href="#equipe" onclick="this.parentElement.classList.remove('open')">Equipe</a>
+  <a href="#contato" onclick="this.parentElement.classList.remove('open')">Contato</a>
+</div>
+</nav>
+
+<!-- HERO -->
+<section id="home" class="hero">
+<div class="hero-bg"><div style="width:100%;height:100%;background:#0f0f0f"></div></div>
+<div class="hero-content">
+  <p class="label">Mundo SENAI — Projeto Integrador</p>
+  <h1><span class="text-gradient">INDUSTRIAL</span><br>KONG</h1>
+  <p class="sub">Um jogo de plataforma inspirado no clássico Donkey Kong, ambientado no universo industrial — rodando em um fliperama artesanal de madeira feito à mão no SENAI.</p>
+  <a href="#sobre" class="btn-primary">EXPLORAR PROJETO</a>
+</div>
+<div class="chevron">▼</div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre">
+<div class="container">
+  <div class="section-divider"></div>
+  <div style="text-align:center;margin-bottom:48px" class="fade-up">
+    <p class="label">Sobre o Projeto</p>
+    <h2 class="section-title">O Conceito</h2>
+    <p style="color:var(--fg2);max-width:720px;margin:0 auto;font-size:1.05rem;line-height:1.8">
+      Inspirado no icônico Donkey Kong, criamos um jogo de plataforma com temática industrial.
+      O jogador precisa escalar plataformas de aço, desviar de obstáculos fabris e coletar itens
+      de café para manter a energia — tudo isso dentro de um cenário que homenageia o ambiente
+      do SENAI e a indústria brasileira.
+    </p>
+  </div>
+  <div class="features-grid">
+    <div class="card steel-border feature-card fade-up">
+      <div class="feature-icon">🎮</div>
+      <h3 style="margin-bottom:10px">Estilo Arcade</h3>
+      <p style="font-size:.9rem;color:var(--fg2)">Mecânicas clássicas de plataforma com controles simples e jogabilidade viciante, remetendo à era de ouro dos arcades.</p>
+    </div>
+    <div class="card steel-border feature-card fade-up">
+      <div class="feature-icon">🏭</div>
+      <h3 style="margin-bottom:10px">Tema Industrial</h3>
+      <p style="font-size:.9rem;color:var(--fg2)">Cenários com engrenagens, esteiras, tubulações e estruturas metálicas que criam uma atmosfera fabril única.</p>
+    </div>
+    <div class="card steel-border feature-card fade-up">
+      <div class="feature-icon">☕</div>
+      <h3 style="margin-bottom:10px">Energia com Café</h3>
+      <p style="font-size:.9rem;color:var(--fg2)">Colete xícaras de café espalhadas pelas fases para manter a energia e avançar nas plataformas.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- DESENVOLVIMENTO -->
+<section id="desenvolvimento" class="industrial-bg">
+<div class="container">
+  <div style="text-align:center;margin-bottom:48px" class="fade-up">
+    <p class="label">Processo</p>
+    <h2 class="section-title">Como Foi Desenvolvido</h2>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card steel-border fade-up"><span class="step-num">1</span>
+      <div class="step-icon">💻</div><h3>Programação</h3>
+      <p>Desenvolvimento do jogo utilizando linguagens de programação e frameworks adequados para jogos 2D de plataforma.</p>
+    </div>
+    <div class="step-card steel-border fade-up"><span class="step-num">2</span>
+      <div class="step-icon">🔧</div><h3>Design de Fases</h3>
+      <p>Cada uma das 3 fases foi desenhada à mão antes de ser implementada, com dificuldade crescente e novos obstáculos.</p>
+    </div>
+    <div class="step-card steel-border fade-up"><span class="step-num">3</span>
+      <div class="step-icon">🎨</div><h3>Arte e Pixel Art</h3>
+      <p>Criação dos sprites, cenários e animações com estética pixel art industrial, incluindo engrenagens e estruturas metálicas.</p>
+    </div>
+    <div class="step-card steel-border fade-up"><span class="step-num">4</span>
+      <div class="step-icon">⚡</div><h3>Integração Hardware</h3>
+      <p>O jogo foi integrado a um fliperama artesanal de madeira com botões e joystick, criando a experiência arcade completa.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- O JOGO -->
+<section id="jogo">
+<div class="container">
+  <div class="section-divider"></div>
+  <div style="text-align:center;margin-bottom:48px" class="fade-up">
+    <p class="label">Gameplay</p>
+    <h2 class="section-title">O Jogo</h2>
+  </div>
+  <div class="game-layout">
+    <div class="fade-up" style="background:var(--card);border-radius:12px;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;font-size:3rem">
+      🎮
+    </div>
+    <div>
+      <div class="card steel-border phase-card fade-up" style="margin-bottom:16px">
+        <span class="phase-num">1</span>
+        <div><div style="display:flex;align-items:center;gap:12px;margin-bottom:4px"><h3 style="font-size:.95rem">Chão de Fábrica</h3><span class="phase-diff">Fácil</span></div>
+        <p style="font-size:.85rem;color:var(--fg2)">Introdução às mecânicas básicas. Plataformas fixas, poucos obstáculos e bastante café disponível.</p></div>
+      </div>
+      <div class="card steel-border phase-card fade-up" style="margin-bottom:16px">
+        <span class="phase-num">2</span>
+        <div><div style="display:flex;align-items:center;gap:12px;margin-bottom:4px"><h3 style="font-size:.95rem">Linha de Montagem</h3><span class="phase-diff">Médio</span></div>
+        <p style="font-size:.85rem;color:var(--fg2)">Esteiras rolantes, engrenagens giratórias e menos itens de café. Timing preciso é essencial.</p></div>
+      </div>
+      <div class="card steel-border phase-card fade-up">
+        <span class="phase-num">3</span>
+        <div><div style="display:flex;align-items:center;gap:12px;margin-bottom:4px"><h3 style="font-size:.95rem">Núcleo Industrial</h3><span class="phase-diff">Difícil</span></div>
+        <p style="font-size:.85rem;color:var(--fg2)">A fase final. Plataformas que desmoronam, obstáculos rápidos e café escasso. Sobreviva até o topo!</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="card steel-border coffee-box fade-up">
+    <div class="coffee-icon float">☕</div>
+    <div style="flex:1;min-width:240px">
+      <h3 style="font-size:1.1rem;margin-bottom:8px">Sistema de Energia ☕</h3>
+      <p style="font-size:.9rem;color:var(--fg2);line-height:1.7">O café é o combustível do trabalhador! Cada xícara coletada restaura parte da barra de energia do jogador. Sem energia, o personagem fica lento e vulnerável. Nas fases avançadas, o café fica cada vez mais raro — gerencie seus recursos com sabedoria.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- FLIPERAMA -->
+<section id="fliperama" class="industrial-bg">
+<div class="container">
+  <div style="text-align:center;margin-bottom:48px" class="fade-up">
+    <p class="label">Fabricação</p>
+    <h2 class="section-title">Fliperama Artesanal</h2>
+  </div>
+  <div class="arcade-layout">
+    <div class="fade-up">
+      <p style="color:var(--fg2);line-height:1.8;margin-bottom:24px">Além do jogo digital, o projeto inclui a construção de um fliperama (arcade) feito totalmente à mão dentro do SENAI. Toda a estrutura foi projetada, cortada e montada artesanalmente, valorizando o trabalho manual e a fabricação artesanal.</p>
+      <div class="arcade-specs">
+        <div class="card steel-border spec-card"><div class="icon">🌲</div><p style="font-family:var(--font-display);font-size:.85rem;font-weight:600">Madeira Maciça</p><p style="font-size:.75rem;color:var(--fg2)">Material principal</p></div>
+        <div class="card steel-border spec-card"><div class="icon">🔨</div><p style="font-family:var(--font-display);font-size:.85rem;font-weight:600">Feito à Mão</p><p style="font-size:.75rem;color:var(--fg2)">100% artesanal</p></div>
+        <div class="card steel-border spec-card"><div class="icon">📐</div><p style="font-family:var(--font-display);font-size:.85rem;font-weight:600">Projeto Técnico</p><p style="font-size:.75rem;color:var(--fg2)">Medidas precisas</p></div>
+      </div>
+      <p style="color:var(--fg2);font-size:.9rem;line-height:1.7">A caixa do fliperama foi construída com madeira, incluindo o painel de controles com joystick e botões. O monitor e a eletrônica foram integrados para rodar o jogo Industrial Kong em uma experiência arcade autêntica.</p>
+    </div>
+    <div class="fade-up" style="background:var(--card);border-radius:12px;aspect-ratio:3/4;display:flex;align-items:center;justify-content:center;font-size:4rem">
+      🕹️
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- GALERIA -->
+<section id="galeria">
+<div class="container">
+  <div class="section-divider"></div>
+  <div style="text-align:center;margin-bottom:48px" class="fade-up">
+    <p class="label">Imagens</p>
+    <h2 class="section-title">Galeria</h2>
+  </div>
+  <div class="gallery-grid">
+    <div class="gallery-item steel-border fade-up" style="background:var(--card);display:flex;align-items:center;justify-content:center;font-size:3rem">🎮<div class="gallery-overlay"><p style="font-size:.9rem">Gameplay do jogo Industrial Kong</p></div></div>
+    <div class="gallery-item steel-border fade-up" style="background:var(--card);display:flex;align-items:center;justify-content:center;font-size:3rem">🕹️<div class="gallery-overlay"><p style="font-size:.9rem">Fliperama artesanal de madeira</p></div></div>
+    <div class="gallery-item steel-border fade-up" style="background:var(--card);display:flex;align-items:center;justify-content:center;font-size:3rem">🏭<div class="gallery-overlay"><p style="font-size:.9rem">Cenário industrial de uma fase</p></div></div>
+    <div class="gallery-item steel-border fade-up" style="background:var(--card);display:flex;align-items:center;justify-content:center;font-size:3rem">👥<div class="gallery-overlay"><p style="font-size:.9rem">Equipe do projeto</p></div></div>
+  </div>
+</div>
+</section>
+
+<!-- EQUIPE -->
+<section id="equipe" class="industrial-bg">
+<div class="container">
+  <div style="text-align:center;margin-bottom:48px" class="fade-up">
+    <p class="label">Quem Fez</p>
+    <h2 class="section-title">Equipe</h2>
+  </div>
+  <div class="team-grid">
+    <div class="card steel-border team-card fade-up"><div class="team-avatar">👤</div><h3 style="font-size:.85rem">Integrante 1</h3><p style="font-size:.75rem;color:var(--fg2)">Programação</p></div>
+    <div class="card steel-border team-card fade-up"><div class="team-avatar">👤</div><h3 style="font-size:.85rem">Integrante 2</h3><p style="font-size:.75rem;color:var(--fg2)">Design / Arte</p></div>
+    <div class="card steel-border team-card fade-up"><div class="team-avatar">👤</div><h3 style="font-size:.85rem">Integrante 3</h3><p style="font-size:.75rem;color:var(--fg2)">Construção do Fliperama</p></div>
+    <div class="card steel-border team-card fade-up"><div class="team-avatar">👤</div><h3 style="font-size:.85rem">Integrante 4</h3><p style="font-size:.75rem;color:var(--fg2)">Game Design</p></div>
+    <div class="card steel-border team-card fade-up"><div class="team-avatar">👤</div><h3 style="font-size:.85rem">Integrante 5</h3><p style="font-size:.75rem;color:var(--fg2)">Documentação</p></div>
+  </div>
+</div>
+</section>
+
+<!-- CONTATO -->
+<section id="contato">
+<div class="container">
+  <div class="section-divider"></div>
+  <div style="text-align:center;max-width:520px;margin:0 auto" class="fade-up">
+    <p class="label">Fale Conosco</p>
+    <h2 class="section-title">Contato</h2>
+    <p style="color:var(--fg2);margin-bottom:40px">Quer saber mais sobre o projeto Industrial Kong? Entre em contato conosco pelas redes sociais ou e-mail.</p>
+    <div class="contact-links">
+      <a href="mailto:contato@senai.edu.br" class="contact-item"><span class="contact-icon steel-border">✉️</span><span style="font-size:.8rem">E-mail</span></a>
+      <a href="#" class="contact-item"><span class="contact-icon steel-border">📸</span><span style="font-size:.8rem">Instagram</span></a>
+      <a href="#" class="contact-item"><span class="contact-icon steel-border">💻</span><span style="font-size:.8rem">GitHub</span></a>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+<div class="container">
+  <p>© 2025 <span style="color:var(--primary)">Industrial Kong</span> — Projeto Mundo SENAI</p>
+</div>
+</footer>
+
+<script>
+// Navbar scroll effect
+window.addEventListener('scroll',()=>{document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>50)});
+
+// Fade-up on scroll (IntersectionObserver)
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:0.15});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
